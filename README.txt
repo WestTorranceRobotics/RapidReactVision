@@ -2,6 +2,9 @@
 Deploying from desktop
 ======================
 
+Connect to the rpi, either directly with ethernet or through the radio connected to the rpi.
+Go to http://wpilibpi.local/ in your browser.
+
 On the rPi web dashboard:
 
 1) Make the rPi writable by selecting the "Writable" tab
@@ -11,7 +14,7 @@ On the rPi web dashboard:
    your desktop project directory
 4) Click Save
 
-The application will be automatically started.  Console output can be seen by
+The application will be automatically started. Console output can be seen by
 enabling console output in the Vision Status tab.
 
 ========================
