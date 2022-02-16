@@ -1,5 +1,4 @@
 #!/bin/sh
 echo "Waiting 5 seconds..."
 sleep 5
-export PYTHONUNBUFFERED=1
-exec ./multiCameraServer.py
+exec env LD_LIBRARY_PATH=/usr/local/frc/lib java -jar java-multiCameraServer-all.jar
