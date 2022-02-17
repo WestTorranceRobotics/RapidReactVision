@@ -23,7 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public final class Main {
 
-  private static final int[] cameraPorts = {0, 2, 4};
+  private static final int[] cameraPorts = {0, 2};
   public static final int NUMBER_CAMERAS = cameraPorts.length;
 
   private Main() {
@@ -88,8 +88,10 @@ public final class Main {
     }, generateAllFlagsMask());
 
     System.out.println("Adding view to Shuffleboard");
+    // System.out.println(Shuffleboard.getTab("Driving Display").getTitle());
+    // Shuffleboard.getTab("Driving Display").addNumber("arg0", Main::hi);
     // Shuffleboard.getTab("Driving Display").add("Selected Camera View", output.getSource())
-    // .withSize(8, 4).withPosition(1, 0);
+    // .withSize(8, 4).withPosition(1, 0).withWidget(BuiltInWidgets.kCameraStream);
 
     int i = 0;
     while (true) {
@@ -132,4 +134,8 @@ public final class Main {
     }
     return mask;
   }
+  public static int hi() {
+    return 0;
+  }
 }
+
