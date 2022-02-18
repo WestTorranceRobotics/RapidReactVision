@@ -11,6 +11,8 @@ team = 2496
 #   Put vision processed stream to shuffleboard
 #   Put multiple streams to shuffleboard
 #   Put center of ball to NetworkTables in the form of distance from center
+def createSliders():
+    return
 
 def main():
     NetworkTables.initialize(server = 'roborio-' + str(team) + '-frc.local')
@@ -29,12 +31,12 @@ def main():
     #cs.getVideo() should return the same object as "cv.VideoCapture('FRC/BallsVid1.mp4')"
     capture = cs.getVideo()
 
-    outputStream = cs.putVideo("Camera 1", 320, 240)
+    outputStream = cs.putVideo("Camera ACTUALLY", 320, 240)
     #capture = cv.VideoCapture(0) #This gets the webcam
-
+    frame = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
     while True:
         #Get Frame, was "capture.read()"
-        ret, frame = capture.grabFrame()
+        ret, frame = capture.grabFrame(frame, 0.225)
         # width = int(capture.get(3))
         # height = int(capture.get(4))
 
@@ -42,14 +44,14 @@ def main():
         
         #Thresholding Blue color
         #This is the thresholding range of colors in HSV
-        lowerBlue = np.array([90,50,50])
+        lowerBlue = np.array([90,50,50]) # add sliders for each of the 3 values in lowerblue and higherblue
         higherBlue = np.array([140,255,255])
         blueMask = cv.inRange(hsv,lowerBlue,higherBlue)
         blueLayer = cv.bitwise_and(frame, frame, mask = blueMask)
         
         #Look for blue circle
-        blurredBlueLayer = cv.GaussianBlur(blueLayer, (7,7), cv.BORDER_CONSTANT)
-        greyedBlueLayer = cv.cvtColor(blurredBlueLayer, cv.COLOR_BGR2GRAY)
+        #blurredBlueLayer = cv.GaussianBlur(blueLayer, (7,7), cv.BORDER_CONSTANT)
+        greyedBlueLayer = cv.cvtColor(blueLayer, cv.COLOR_BGR2GRAY)
         bCircles = cv.HoughCircles(greyedBlueLayer, cv.HOUGH_GRADIENT, 2, 100, param1=70, param2=30, minRadius=10,maxRadius=150)
 
         bCirclesData = np.array([[]])
@@ -102,10 +104,11 @@ def main():
         if cv.waitKey(20) == ord('q'):
             break
 
+        outputStream.putFrame(frame)
         #Sends data to NetworkTables for java code to work with
         vision_nt = NetworkTables.getTable('Vision')
         vision_nt.putBoolean("Blue Found", foundBlue)
-        vision_nt.putBoolean("Red FOund", foundRed)
+        vision_nt.putBoolean("Red Found", foundRed)
 
     capture.release()
     cv.destroyAllWindows()
