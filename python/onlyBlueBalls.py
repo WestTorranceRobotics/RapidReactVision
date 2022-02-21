@@ -44,14 +44,11 @@ def main():
     #cs.getVideo() should return the same object as "cv.VideoCapture('FRC/BallsVid1.mp4')"
     capture = cs.getVideo()
 
-    outputStream = cs.putVideo("Camera ACTUALLY", 320, 240)
-    #capture = cv.VideoCapture(0) #This gets the webcam
+    originalOutputStream = cs.putVideo("Original", 320, 240)
+    thresholdedOutputStream = cs.putVideo("Thresholded", 320, 240)
     frame = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
     while True:
-        #Get Frame, was "capture.read()"
         ret, frame = capture.grabFrame(frame, 0.225)
-        # width = int(capture.get(3))
-        # height = int(capture.get(4))
 
         hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
         
@@ -66,13 +63,13 @@ def main():
         lowerBlue = np.array([lowerH,lowerS,lowerV]) # add sliders for each of the 3 values in lowerblue and higherblue
         higherBlue = np.array([upperH,upperS,upperV])
         blueMask = cv.inRange(hsv,lowerBlue,higherBlue)
-        blueLayer = cv.bitwise_and(frame, frame, mask = blueMask)
 
         #This is the delay between frames as well as for exiting the loop if the q key is pressed. It is in milliseconds
         if cv.waitKey(20) == ord('q'):
             break
 
-        outputStream.putFrame(blueLayer)
+        originalOutputStream.putFrame(frame)
+        thresholdedOutputStream.putFrame(blueMask)
         #Sends data to NetworkTables for java code to work with
         vision_nt = NetworkTables.getTable('Vision')
         # vision_nt.putBoolean("Blue Found", foundBlue)
