@@ -5,6 +5,7 @@ from networktables import NetworkTable, NetworkTables
 
 import cv2 as cv
 import numpy as np
+import math 
 
 global team 
 team = 2496
@@ -16,7 +17,7 @@ team = 2496
 def createSliders():
     return
 
-areaThreshold = 0
+#areaThreshold = 0
 
 def main():
     NetworkTables.initialize(server = 'roborio-' + str(team) + '-frc.local')
@@ -72,14 +73,27 @@ def main():
             foundBlue = True
         '''
 
-        areaThreshold = NetworkTables.getDefault().getTable("Vision").getEntry("Area Threshold").value
+    #areaThreshold = NetworkTables.getDefault().getTable("Vision").getEntry("Area Threshold").value
         _, contours, _ = cv.findContours(closed, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         
-        for contour in contours:
-            area = cv.contourArea(contour)
+        for i in range(len(contours)):
+            area = cv.contourArea(contours[i])
             
-            if area > areaThreshold:
-                cv.drawContours(frame, contour, -1, (255,0,0), 3)
+            if area > 500:
+                x,y,w,h = cv.boundingRect(contours[i])
+                radius = max(w,h)/2
+                center = (int(x+w/2), int(y+h/2))
+
+                closePoints = 0
+                maxError = 0.3
+                for point in contours[i]:
+                    dist = math.hypot(point[0][0]-center[0], point[0][1]-center[1])
+                    if abs((dist/radius)-1) < maxError:
+                        closePoints += 1
+
+                print(closePoints/len(contours[i]))
+                if closePoints/len(contours[i]) > 0.75:
+                    cv.circle(frame, center, int(radius), (255,0,0), 3)
         
         #This is the delay between frames as well as for exiting the loop if the q key is pressed. It is in milliseconds
         if cv.waitKey(20) == ord('q'):
@@ -89,11 +103,11 @@ def main():
         trackedBlue.putFrame(frame)
         #Sends data to NetworkTables for java code to work with
         vision_nt = NetworkTables.getTable('Vision')
-        vision_nt.putNumber("Area Threshold", areaThreshold)
+        #vision_nt.putNumber("Area Threshold", areaThreshold)
         #vision_nt.putBoolean("Blue Found", foundBlue)
         
 
-    capture.release()
+    capture.release() 
     cv.destroyAllWindows()
 
 if __name__ == "__main__":
