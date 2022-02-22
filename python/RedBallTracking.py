@@ -45,12 +45,12 @@ def main():
 
         #Thresholding Blue color
         #This is the thresholding range of colors in HSV
-        lowerBlue = np.array([92,116,71]) # add sliders for each of the 3 values in lowerblue and higherblue
-        higherBlue = np.array([113,225,255])
-        blueMask = cv.inRange(hsv,lowerBlue,higherBlue)
+        lowerRed = np.array([0,170,201]) # add sliders for each of the 3 values in lowerblue and higherblue
+        higherRed = np.array([63,255,255])
+        redMask = cv.inRange(hsv,lowerRed,higherRed)
         
         #Remove Imperfections
-        opened=cv.morphologyEx(blueMask, cv.MORPH_OPEN, (7,7), iterations=4)
+        opened=cv.morphologyEx(redMask, cv.MORPH_OPEN, (7,7), iterations=4)
         closed = cv.morphologyEx(opened, cv.MORPH_CLOSE, (5,5), iterations=3)
         '''
         #Look for blue circle
@@ -93,7 +93,7 @@ def main():
 
                 print(closePoints/len(contours[i]))
                 if closePoints/len(contours[i]) > 0.75:
-                    cv.circle(frame, center, int(radius), (255,0,0), 3)
+                    cv.circle(frame, center, int(radius), (30,0,0), 3)
                     vision_nt.putNumber("Xposition", center[0]) 
                     vision_nt.putNumber("yposition", center[1])
         
