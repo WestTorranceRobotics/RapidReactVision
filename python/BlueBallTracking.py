@@ -79,7 +79,7 @@ def main():
         for i in range(len(contours)):
             area = cv.contourArea(contours[i])
 
-            if area > 500:
+            if area > 750:
                 x,y,w,h = cv.boundingRect(contours[i])
                 radius = max(w,h)/2
                 center = (int(x+w/2), int(y+h/2))
@@ -94,8 +94,8 @@ def main():
                 print(closePoints/len(contours[i]))
                 if closePoints/len(contours[i]) > 0.75:
                     cv.circle(frame, center, int(radius), (255,0,0), 3)
-                    vision_nt.putNumber("Xposition", center[0]) 
-                    vision_nt.putNumber("yposition", center[1])
+                    vision_nt.putNumber("Xposition", center[0] - 320/2) 
+                    vision_nt.putNumber("Yposition", 240/2 - center[1])
         
         #This is the delay between frames as well as for exiting the loop if the q key is pressed. It is in milliseconds
         if cv.waitKey(20) == ord('q'):
