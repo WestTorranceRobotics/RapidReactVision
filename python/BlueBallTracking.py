@@ -1,7 +1,10 @@
 import itertools
+import json
+import time
+import sys
 from pydoc import visiblename
-from cscore import CameraServer
-from networktables import NetworkTable, NetworkTables
+from cscore import CameraServer, VideoSource, UsbCamera, MjpegServer
+from networktables import NetworkTablesInstance, NetworkTables
 
 import cv2 as cv
 import numpy as np
@@ -9,13 +12,29 @@ import math
 
 global team 
 team = 2496
+
+cameraConfigs = []
+cameras_list = []
+
 #TODO
 #   Put Camera stream to shuffleboard
 #   Put vision processed stream to shuffleboard
 #   Put multiple streams to shuffleboard
 #   Put center of ball to NetworkTables in the form of distance from center
-def createSliders():
-    return
+def startCamera(config):
+    """Start running the camera."""
+    print("Starting camera '{}' on {}".format(config.name, config.path))
+    inst = CameraServer.getInstance()
+    camera = UsbCamera(config.name, config.path)
+    server = inst.startAutomaticCapture(camera=camera, return_server=True)
+
+    camera.setConfigJson(json.dumps(config.config))
+    camera.setConnectionStrategy(VideoSource.ConnectionStrategy.kKeepOpen)
+
+    if config.streamConfig is not None:
+        server.setConfigJson(json.dumps(config.streamConfig))
+
+    return camera
 
 #areaThreshold = 0
 
@@ -29,8 +48,11 @@ def main():
     cs = CameraServer.getInstance()
     cs.enableLogging()
     #Gets the camera connected to the pi
-    camera = cs.startAutomaticCapture()
-    camera.setResolution(320, 240)
+    
+    camera = UsbCamera("Fishtest", "/dev/video2")
+    server = cs.startAutomaticCapture(camera=camera, return_server=True)
+    # camera = cs.startAutomaticCapture()
+    # camera.setResolution(320, 240)
     #https://robotpy.readthedocs.io/en/stable/vision/code.html
     #cs.getVideo() should return the same object as "cv.VideoCapture('FRC/BallsVid1.mp4')"
     capture = cs.getVideo()

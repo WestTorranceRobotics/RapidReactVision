@@ -60,7 +60,7 @@ team = 2496
 server = False
 cameraConfigs = []
 switchedCameraConfigs = []
-cameras = []
+cameras_list = []
 
 def parseError(str):
     """Report parse error."""
@@ -105,7 +105,7 @@ def readSwitchedCameraConfig(config):
 
     # path
     try:
-        cam.key = config["key"]
+        cam.path = config["key"]
     except KeyError:
         parseError("switched camera '{}': could not read key".format(cam.name))
         return False
@@ -150,11 +150,11 @@ def readConfig():
 
     # cameras
     try:
-        cameras = j["cameras"]
+        cameras_list = j["cameras"]
     except KeyError:
         parseError("could not read cameras")
         return False
-    for camera in cameras:
+    for camera in cameras_list:
         if not readCameraConfig(camera):
             return False
 
@@ -189,12 +189,12 @@ def startSwitchedCamera(config):
     def listener(fromobj, key, value, isNew):
         if isinstance(value, float):
             i = int(value)
-            if i >= 0 and i < len(cameras):
-              server.setSource(cameras[i])
+            if i >= 0 and i < len(cameras_list):
+              server.setSource(cameras_list[i])
         elif isinstance(value, str):
             for i in range(len(cameraConfigs)):
                 if value == cameraConfigs[i].name:
-                    server.setSource(cameras[i])
+                    server.setSource(cameras_list[i])
                     break
 
     NetworkTablesInstance.getDefault().getEntry(config.key).addListener(
@@ -225,7 +225,7 @@ if __name__ == "__main__":
 
     # start cameras
     for config in cameraConfigs:
-        cameras.append(startCamera(config))
+        cameras_list.append(startCamera(config))
 
     # start switched cameras
     for config in switchedCameraConfigs:
@@ -234,3 +234,8 @@ if __name__ == "__main__":
     # loop forever
     while True:
         time.sleep(10)
+
+"""
+Notes:
+server should set the same resolution as the camera to reduce cpu usage on the pi
+"""

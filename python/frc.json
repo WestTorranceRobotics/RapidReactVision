@@ -3,14 +3,14 @@
     "ntmode": "client",
     "cameras": [
         {
-            "name": "Camera 1",
+            "name": "Micro",
             "path": "/dev/video0",
             "pixel format": "MJPEG",
             "width": 480,
             "height": 360
         },
         {
-            "name": "Camera 2",
+            "name": "Fish",
             "path": "/dev/video2",
             "pixel format": "MJPEG",
             "width": 480,
