@@ -33,7 +33,7 @@ def SelectVideoSource(value):
 #Base window
 root = Tk()
 root.title("Thresholding Tool")
-root.iconbitmap("ColorWheel.ico")
+#root.iconbitmap("ColorWheel.ico")
 root.geometry("800x620")
 root.resizable(width=False, height=False)
 
