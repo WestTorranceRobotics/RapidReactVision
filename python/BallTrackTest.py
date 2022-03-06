@@ -2,7 +2,7 @@ import cv2 as cv
 import numpy as np
 import math
 
-vid = cv.VideoCapture(1)
+vid = cv.VideoCapture(0)
 
 def Threshold(hsv, values):
     if values[0] < values[3]:
@@ -24,9 +24,9 @@ def FindBall(frame, mask, areaThreshold=200, color=(0,0,0), biggest=False):
     contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     
     biggestBallData = None #[center, radius, area]
+    centers = []
     for i in range(len(contours)):
         area = cv.contourArea(contours[i])
-
         if area > areaThreshold:
             x,y,w,h = cv.boundingRect(contours[i])
             radius = int(max(w,h)/2)
@@ -41,39 +41,48 @@ def FindBall(frame, mask, areaThreshold=200, color=(0,0,0), biggest=False):
             if closePoints/len(contours[i]) > 0.75:
                 if not biggest:
                     cv.circle(frame, center, radius, color, 3)
+                    centers.append(center)
                 else:
                     if biggestBallData == None or area > biggestBallData[2]:
                         biggestBallData = [center, radius, area]
+                        if len(centers) == 0:
+                            centers.append(center)
+                        else:
+                            centers[0] = center
 
     
     if biggest:
         try:
-            print(biggestBallData)
             cv.circle(frame, biggestBallData[0], biggestBallData[1], color, 3)
         except:
             pass
 
+    distFromCenter = []
+    for center in centers:
+        h,w,c = frame.shape
+        xdist = center[0] - w/2
+        ydist = -(center[1] - h/2)
+        distFromCenter.append((xdist, ydist))
 
-redValues = [174, 152, 21, 6, 255, 255]
-blueValues = [95, 138, 91, 119, 255, 192]
+    return distFromCenter
+
+
+redValues = [0, 143, 116, 14, 255, 255]
 
 while cv.waitKey(20) != ord("q"):
     ret, frame = vid.read()
-    retCopy, frameCopy = vid.read()
 
     hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
 
     redMask = Threshold(hsv, redValues)
-    blueMask = Threshold(hsv, blueValues)
 
-    FindBall(frame, redMask, areaThreshold=200, color=(0,0,255))
-    FindBall(frame, blueMask, areaThreshold=200, color=(255,0,0))
+    data = FindBall(frame, redMask, areaThreshold=200, color=(0,0,255))
 
-    FindBall(frameCopy, redMask, areaThreshold=200, color=(0,0,255), biggest=True)
-    FindBall(frameCopy, blueMask, areaThreshold=200, color=(255,0,0), biggest=True)
+    print(data)
+
+    # FindBall(frameCopy, redMask, areaThreshold=200, color=(0,0,255), biggest=True)
+    # FindBall(frameCopy, blueMask, areaThreshold=200, color=(255,0,0), biggest=True)
 
     cv.imshow("All Balls", frame)
-    cv.imshow("Biggest Ball", frameCopy)
-
 vid.release()
 cv.destroyAllWindows()

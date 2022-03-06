@@ -74,26 +74,6 @@ def main():
         #Remove Imperfections
         opened=cv.morphologyEx(blueMask, cv.MORPH_OPEN, (7,7), iterations=4)
         closed = cv.morphologyEx(opened, cv.MORPH_CLOSE, (5,5), iterations=3)
-        '''
-        #Look for blue circle
-        bCircles = cv.HoughCircles(closed, cv.HOUGH_GRADIENT, 2, 100, param1=70, param2=30, minRadius=10,maxRadius=100)
-
-        bCirclesData = np.array([[]])
-        try:
-            print(bCircles)
-            if not bCircles == None:
-                bCirclesData = np.uint16(np.around(bCircles))
-        except:
-            bCirclesData = np.uint16(np.around(bCircles))
-            print(bCircles)
-            
-        #Draw blue circles
-        foundBlue = False
-        for bCircle in bCirclesData[0, :]:
-            cv.circle(frame, (bCircle[0], bCircle[1]), bCircle[2], (255,0,0), 2)
-            cv.circle(frame, (bCircle[0], bCircle[1]), 2, (255,0,0), 3)
-            foundBlue = True
-        '''
 
     #areaThreshold = NetworkTables.getDefault().getTable("Vision").getEntry("Area Threshold").value
         _, contours, _ = cv.findContours(closed, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
