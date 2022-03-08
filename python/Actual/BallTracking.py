@@ -54,8 +54,10 @@ def Threshold(hsv, values):
         return cv.bitwise_or(mask1, mask2)
 
 def FindBall(frame, mask, areaThreshold=200, color=(0,0,0), biggest=False):
-    contours, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    data = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     
+    contours = data[1]
+
     biggestBallData = None #[center, radius, area]
     centers = []
     for i in range(len(contours)):
