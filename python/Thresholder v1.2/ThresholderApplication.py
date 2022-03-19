@@ -18,6 +18,8 @@ def GetVidSource(source):
         vid = cv.VideoCapture(2)
     elif source == "USB 3":
         vid = cv.VideoCapture(3)
+    elif source == "Rasberry PI":
+        vid = cv.VideoCapture('http://wpilibpi.local:1181/stream.mjpg')
     else:
         print("Invalid Input")
 
@@ -33,7 +35,7 @@ def SelectVideoSource(value):
 #Base window
 root = Tk()
 root.title("Thresholding Tool")
-#root.iconbitmap("ColorWheel.ico")
+root.iconbitmap("ColorWheel.ico")
 root.geometry("800x620")
 root.resizable(width=False, height=False)
 
@@ -43,7 +45,7 @@ selectionFrame = Frame(root, width=800, height=80, bg="light grey")
 selectionFrame.grid(row=0, column=0, columnspan=2)
 selectionFrame.grid_propagate(False)
 
-videoSourceOptions = ["Web Camera", "USB 1", "USB 2", "USB 3"]
+videoSourceOptions = ["Web Camera", "USB 1", "USB 2", "USB 3", "Rasberry PI"]
 videoSourceDropdown = Dropdown(selectionFrame, text="Video Source", options=videoSourceOptions, command=SelectVideoSource, bg="light grey", defualtValue="None")
 videoSourceDropdown.place()
 #dropdown.grid(row=0, column=0)
