@@ -145,7 +145,7 @@ def main():
     trackedBallsFeed = cs.putVideo("Tracked Balls", 320, 240)
     frame = np.zeros(shape=(240, 320, 3), dtype=np.uint8)
 
-    blueValues = [87,100,20, 113,255,255]
+    blueValues = [60,100,0, 113,255,255]
     redValues = [0,170,140, 63,255,255]
     # lower, upper
     # [h,s,v, h,s,v]
